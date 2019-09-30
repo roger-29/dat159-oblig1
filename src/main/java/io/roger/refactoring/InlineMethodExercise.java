@@ -13,7 +13,9 @@ public class InlineMethodExercise {
 
 		public int doIt() {
 			int result = foo();
+
 			System.out.println(result);
+
 			return result;
 		}
 	}

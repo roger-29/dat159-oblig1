@@ -12,8 +12,10 @@ public class ExtractVariable {
 	int resize = 0;
 
 	void simple() {
-		if ((platform.toUpperCase().indexOf("MAC") > -1) && (browser.toUpperCase().indexOf("IE") > -1) && wasInitialized
-				&& resize > 0) {
+		boolean platformMac = platform.toUpperCase().indexOf("MAC") > -1;
+		boolean browserIE = browser.toUpperCase().indexOf("IE") > -1;
+
+		if (platformMac && browserIE && wasInitialized && resize > 0) {
 			// do something
 		}
 	}
@@ -26,8 +28,8 @@ public class ExtractVariable {
 	int dangerWillRobinson() {
 		// Extract subexpression/"Replace All" in Eclipse
 		// (Goodie below)
-		int temp = plusOne() + plusOne();
-		return temp;
+
+		return plusOne() + plusOne() + plusOne();
 	}
 
 	@Test

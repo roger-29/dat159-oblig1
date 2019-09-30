@@ -23,7 +23,6 @@ public class ExtractMethod {
 	}
 
 	void localVariable() {
-
 		System.out.println("The output is:");
 		int temp = fields_are_easy + 1;
 		System.out.println(temp);

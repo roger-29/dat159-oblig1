@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - CBO2",
+            "request": "launch",
+            "mainClass": "io.roger.metrics.CBO2",
+            "projectName": "refactoring"
+        }
+    ]
+}

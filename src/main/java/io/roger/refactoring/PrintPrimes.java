@@ -1,70 +1,76 @@
 package io.roger.refactoring;
 
-/* Knuth's PrintPrimes / Clean Code */
+/* Knuth's PrintPrimes / "Clean Code" 👀 */
 
 public class PrintPrimes {
   public static void main(String[] args) {
-    final int M = 1000;
+    final int MAX = 1000;
+    final int MAXWORDS = 30;
+
+    int[] p = new int[MAX + 1];
+    p[1] = 2;
+
+    int n;
+    int j = 1, k = 1;
+    boolean jPrime;
+    int ord = 2;
+    int square = 9;
+    int mult[] = new int[MAXWORDS + 1];
+
+    while (k < MAX) {
+      do {
+        j += 2;
+
+        if (j == square) {
+          ord++;
+          square = p[ord] * p[ord];
+          mult[ord - 1] = j;
+        }
+
+        n = 2;
+        jPrime = true;
+
+        while (n < ord && jPrime) {
+          while (mult[n] < j) {
+            mult[n] = mult[n] + p[n] * 2;
+          }
+
+          if (mult[n] == j) {
+            jPrime = false;
+          }
+
+          n++;
+        }
+      } while (!jPrime);
+
+      k++;
+      p[k] = j;
+    }
+
+    something(MAX, p);
+  }
+
+  public static void something(int max, int[] p) {
     final int RR = 50;
     final int CC = 4;
-    final int WW = 10;
-    final int ORDMAX = 30;
-    int P[] = new int[M + 1];
-    int PAGENUMBER;
-    int PAGEOFFSET;
-    int ROWOFFSET;
-    int C;
-    int J;
-    int K;
-    boolean JPRIME;
-    int ORD;
-    int SQUARE;
-    int N;
-    int MULT[] = new int[ORDMAX + 1];
+    int pageNumber = 1;
+    int pageOffset = 1;
 
-    J = 1;
-    K = 1;
-    P[1] = 2;
-    ORD = 2;
-    SQUARE = 9;
+    while (pageOffset <= max) {
+      System.out.println("The First " + max + " Prime Numbers --- Page " + pageNumber);
 
-    while (K < M) {
-      do {
-        J = J + 2;
-        if (J == SQUARE) {
-          ORD = ORD + 1;
-          SQUARE = P[ORD] * P[ORD];
-          MULT[ORD - 1] = J;
+      for (int rowOffset = pageOffset; rowOffset < pageOffset + RR; rowOffset++) {
+        for (int c = 0; c < CC; c++) {
+          if (rowOffset + c * RR <= max) {
+            System.out.format("%10d", p[rowOffset + c * RR]);
+          }
         }
-        N = 2;
-        JPRIME = true;
-        while (N < ORD && JPRIME) {
-          while (MULT[N] < J)
-            MULT[N] = MULT[N] + P[N] + P[N];
-          if (MULT[N] == J)
-            JPRIME = false;
-          N = N + 1;
-        }
-      } while (!JPRIME);
-      K = K + 1;
-      P[K] = J;
-    }
-    {
-      PAGENUMBER = 1;
-      PAGEOFFSET = 1;
-      while (PAGEOFFSET <= M) {
-        System.out.println("The First " + M + " Prime Numbers --- Page " + PAGENUMBER);
-        System.out.println("");
-        for (ROWOFFSET = PAGEOFFSET; ROWOFFSET < PAGEOFFSET + RR; ROWOFFSET++) {
-          for (C = 0; C < CC; C++)
-            if (ROWOFFSET + C * RR <= M)
-              System.out.format("%10d", P[ROWOFFSET + C * RR]);
-          System.out.println("");
-        }
-        System.out.println("\f");
-        PAGENUMBER = PAGENUMBER + 1;
-        PAGEOFFSET = PAGEOFFSET + RR * CC;
       }
+
+      System.out.println("\f");
+
+      pageNumber = pageNumber + 1;
+      pageOffset = pageOffset + RR * CC;
     }
   }
 }
