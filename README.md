@@ -4,6 +4,32 @@
 
 By Arne Molland and Sondre Gjellestad
 
+
+### B. SLOC and cyclomatic complexity
+
+We will now use a couple different metrics to evaluate the effect the refactorings had on our code, specifically on the `Customer#statement`-method.
+
+#### SLOC
+
+After all the refactorings we did, we are now down to this (excluding comments and whitespace).
+
+- SLOC before: 35
+- SLOC after: 22
+
+Moving the switch statement out of the method had the biggest effect on this metric.
+
+#### Cyclomatic complexity
+
+We can calculate the cyclomatic complexity using M = E - N + 2P, where E is the number of edges, N is the number of nodes and P is the number of connected components.
+
+- Before: 36 edges - 31 nodes + 2 \* 1 connected components = 17
+- After: 21 edges - 20 nodes + 2 \* 1 connected components = 3
+
+![Before](docs/cyclomatic-before.png)
+![After](docs/cyclomatic-after.png)
+
+Removing the switch statement also had the biggest impact on this metric.
+
 ## Task 2 | Self Contained Example Showing the Pull Up Method
 
 Here is some code containing a few classes with inheritance. We have an ancestor Spacecraft class, and a couple types of spacecraft that inherit from it. Looking at the child classes, it might seem that the calculate range function is duplicated, so it might look like an opportunity to lift up the `calculateRange`-method.
