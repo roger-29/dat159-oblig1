@@ -16,5 +16,4 @@ public class Rental {
 	public int getDaysRented() {
 		return daysRented;
 	}
-
 }
