@@ -4,6 +4,133 @@
 
 By Arne Molland and Sondre Gjellestad
 
+## Task 1 | Refactoring Fowler's Video Store
+
+### A. Refactorings
+
+In the original Customer class the statement method looks like this. There is a switch statement that uses a final field on the movie to determine what price should be applied. This can be refactored into a separate abstract class that contains a method that returns the price, depending on the type of the movie. (Replace Conditional with Polymorphism)
+
+We will also extract `each.getDaysRented()` into a variable, as it is called multiple times. (Extract Variable)
+
+```java
+switch (each.getMovie().getPriceCode()) {
+	case Movie.REGULAR:
+		thisAmount += 2;
+		if (each.getDaysRented() > 2)
+			thisAmount += (each.getDaysRented() - 2) * 1.5;
+		break;
+	case Movie.NEW_RELEASE:
+		thisAmount += each.getDaysRented() * 3;
+		break;
+	case Movie.CHILDRENS:
+		thisAmount += 1.5;
+		if (each.getDaysRented() > 3)
+			thisAmount += (each.getDaysRented() - 3) * 1.5;
+		break;
+}
+```
+
+After doing the refactoring the Customer#statement method looks like this.
+
+```java
+public String statement() {
+	double totalAmount = 0;
+	int frequentRenterPoints = 0;
+
+	Enumeration<Rental> rentals = this.rentals.elements();
+
+	String result = String.format("Rental Record for %s\n", getName());
+
+	while (rentals.hasMoreElements()) {
+		Rental rental = rentals.nextElement();
+
+		int daysRented = rental.getDaysRented();
+		MovieType movieType = rental.getMovie().getMovieType();
+
+		// Determine amount for each line
+		double amount = movieType.getPrice(daysRented);
+
+		// Add frequent renter points
+		frequentRenterPoints++;
+
+		// Add bonus for a two day new release rental
+		if ((movieType.getClass() == MovieType.NEW_RELEASE.class) && daysRented > 1) {
+			frequentRenterPoints++;
+		}
+
+		// Show figures for this rental
+		String movieTitle = rental.getMovie().getTitle();
+		result += "\t" + movieTitle + "\t" + String.valueOf(amount) + "\n";
+		totalAmount += amount;
+	}
+
+	// Add footer lines
+	result += "Amount owed is " + totalAmount + "\n";
+	result += "You earned " + frequentRenterPoints + " frequent renter points";
+
+	return result;
+}
+```
+
+Here is the new MovieType class.
+
+```java
+package io.roger.fowler;
+
+abstract class MovieType {
+	abstract double getPrice(int days);
+
+	class REGULAR extends MovieType {
+		@Override
+		double getPrice(int days) {
+			double amount = 2;
+
+			if (days > 2) {
+				amount += (days - 2) * 1.5;
+			}
+
+			return amount;
+		}
+	}
+
+	class NEW_RELEASE extends MovieType {
+		@Override
+		double getPrice(int days) {
+			return days * 3;
+		}
+	}
+
+	class CHILDRENS extends MovieType {
+		@Override
+		double getPrice(int days) {
+			double amount = 1.5;
+
+			if (days > 3) {
+				amount += (days - 3) * 1.5;
+			}
+
+			return amount;
+		}
+	}
+}
+
+```
+
+In the Movie class, instead of taking a price code parameter, we take an instance of the MovieType class.
+
+```java
+public class Movie {
+	private String title;
+	private MovieType movieType;
+
+	public Movie(String title, MovieType movieType) {
+		this.title = title;
+		this.movieType = movieType;
+	}
+
+	...
+}
+```
 
 ### B. SLOC and cyclomatic complexity
 
@@ -128,7 +255,6 @@ public class AfterPullUp {
 		System.out.println("The interstellar spacecraft can travel " + interstellar.getRange() + "km.");
 	}
 }
-
 ```
 
 This is what we get before refactoring, and what we should expect afterwards if the refactoring was appropriate.
@@ -145,100 +271,4 @@ The lunar shuttle can travel 0km.
 The interstellar spacecraft can travel 0km.
 ```
 
-The conclusion is that one must be careful before pulling up, as a method might depend upon specific things in the child class and there might also be other differences between the methods. In these cases an abstract class or interface might be a better option.
-
-## Task 1
-
-### a)
-
-#### Extract Variable
-
-Before:
-
-```java
-void simple() {
-	if ((platform.toUpperCase().indexOf("MAC") > -1) && (browser.toUpperCase().indexOf("IE") > -1) && wasInitialized && resize > 0) {
-		// do something
-	}
-}
-```
-
-After:
-
-```java
-void simple() {
-	boolean platformMac = platform.toUpperCase().indexOf("MAC") > -1;
-	boolean browserIE = browser.toUpperCase().indexOf("IE") > -1;
-
-	if (platformMac && browserIE && wasInitialized && resize > 0) {
-		// do something
-	}
-}
-```
-
-#### Move Method
-
-Before:
-
-```java
-class Project {
-	Person manager;
-	Person[] participants;
-
-	void shouldntreallyBeHere() {
-		System.out.println(manager.id);
-		System.out.println(manager.name);
-	}
-}
-
-class Person {
-	int id;
-	String name;
-
-	boolean participate(Project p) {
-		for (int i = 0; i < p.participants.length; i++) {
-			if (p.participants[i].id == id)
-				return (true);
-		}
-		return (false);
-	}
-}
-```
-
-After:
-
-```java
-class Project {
-	Person manager;
-	Person[] participants;
-}
-
-class Person {
-	int id;
-	String name;
-
-	boolean isAParticipantOf(Project p) {
-		for (int i = 0; i < p.participants.length; i++) {
-			if (p.participants[i].id == id) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	void shouldBeHere() {
-		System.out.println(this.id);
-		System.out.println(this.name);
-	}
-}
-```
-
-### b)
-
-McCabe's Cyclomatic Complexity before refactorings:
-
-- 1 + 1 + 4 = 6
-
-After refactorings:
-
-- 1 + 1 = 2
+The conclusion is that one must be careful before pulling up, as a method might depend upon specific things in the child class and there might also be other differences between the methods. In these cases an abstract class/method or interface might be a better option if we wanted to enforce a field with specific types for subclasses.
