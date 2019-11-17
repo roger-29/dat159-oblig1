@@ -112,7 +112,7 @@ The lunar shuttle can travel 691800km.
 The interstellar spacecraft can travel 34999999995000km.
 ```
 
-However, this is what we actually get. There are a couple things that have gone wrong here. First off, the `MAX_RANGE`-constant now refers to the uninitialized one in the ancestor class and therefore gives zero. We also missed a small difference between the methods, which would have made the results different if it wasn't for the first error.
+However, this is what we actually get. There are a couple things that have gone wrong here. First off, the `MAX_RANGE`-constant now refers to the uninitialized one in the ancestor class and therefore gives zero. We also missed a small difference between the methods, the multipler for `cargoAmount`, which would have made the results different if it wasn't for the first error.
 
 ```bash
 The lunar shuttle can travel 0km.
