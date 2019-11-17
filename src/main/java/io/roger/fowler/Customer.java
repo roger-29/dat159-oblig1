@@ -4,56 +4,56 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 public class Customer {
-    private String _name;
-    private Vector<Rental> _rentals = new Vector<Rental>();
+	private String name;
+	private Vector<Rental> rentals = new Vector<Rental>();
 
-    public Customer(String name) {
-        _name = name;
-    }
+	public Customer(String name) {
+		this.name = name;
+	}
 
-    public String statement() {
-        double totalAmount = 0;
-        int frequentRenterPoints = 0;
+	public String statement() {
+		double totalAmount = 0;
+		int frequentRenterPoints = 0;
 
-        Enumeration<Rental> rentals = _rentals.elements();
+		Enumeration<Rental> rentals = this.rentals.elements();
 
-        String result = String.format("Rental Record for %s\n", getName());
-        while (rentals.hasMoreElements()) {
-            double amount = 0;
-            Rental nextElement = rentals.nextElement();
+		String result = String.format("Rental Record for %s\n", getName());
 
-            String movieTitle = nextElement.getMovie().getTitle();
-            int daysRented = nextElement.getDaysRented();
-            int priceCode = nextElement.getMovie().getPriceCode();
+		while (rentals.hasMoreElements()) {
+			Rental rental = rentals.nextElement();
 
-            // Determine amount for each line
-            amount += nextElement.getMovie().getPrice(daysRented);
+			int daysRented = rental.getDaysRented();
+			MovieType movieType = rental.getMovie().getMovieType();
 
-            // Add frequent renter points
-            frequentRenterPoints++;
+			// Determine amount for each line
+			double amount = movieType.getPrice(daysRented);
 
-            // Add bonus for a two day new release rental
-            if ((priceCode == Movie.NEW_RELEASE) && daysRented > 1) {
-                frequentRenterPoints++;
-            }
+			// Add frequent renter points
+			frequentRenterPoints++;
 
-            // Show figures for this rental
-            result += "\t" + movieTitle + "\t" + String.valueOf(amount) + "\n";
-            totalAmount += amount;
-        }
+			// Add bonus for a two day new release rental
+			if ((movieType.getClass() == MovieType.NEW_RELEASE.class) && daysRented > 1) {
+				frequentRenterPoints++;
+			}
 
-        // Add footer lines
-        result += "Amount owed is " + String.valueOf(totalAmount) + "\n";
-        result += "You earned " + String.valueOf(frequentRenterPoints) + " frequent renter points";
+			// Show figures for this rental
+			String movieTitle = rental.getMovie().getTitle();
+			result += "\t" + movieTitle + "\t" + String.valueOf(amount) + "\n";
+			totalAmount += amount;
+		}
 
-        return result;
-    }
+		// Add footer lines
+		result += "Amount owed is " + totalAmount + "\n";
+		result += "You earned " + frequentRenterPoints + " frequent renter points";
 
-    public void addRental(Rental rental) {
-        _rentals.addElement(rental);
-    }
+		return result;
+	}
 
-    public String getName() {
-        return _name;
-    }
+	public void addRental(Rental rental) {
+		rentals.addElement(rental);
+	}
+
+	public String getName() {
+		return name;
+	}
 }
